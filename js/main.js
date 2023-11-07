@@ -252,7 +252,14 @@ function setupMapEvents() {
           );
           map
             .getView()
-            .fit(extent, { duration: 500, padding: [50, 50, 50, 50] });
+            .fit(extent, {
+              duration: 500,
+              minResolution:
+                map.getView().getZoom() < 16
+                  ? map.getView().getResolutionForZoom(16)
+                  : map.getView().getResolution(),
+              padding: [50, 50, 50, 50],
+            });
         }
       }
     });
