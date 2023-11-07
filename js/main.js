@@ -94,7 +94,7 @@ function getTreeStyle(feature) {
         color: "#fff",
         width: 3,
       }),
-      offsetY: 18,
+      offsetY: 5,
       text: text,
     }),
   });
@@ -133,7 +133,7 @@ function selectStyle(feature) {
         color: "#add8e6",
         width: 4,
       }),
-      offsetY: 18,
+      offsetY: 5,
       text: text,
     }),
     zIndex: 9999,
