@@ -329,6 +329,7 @@ function showClusteredTrees(features) {
     });
   });
   searchResultsContainer.appendChild(tableElement);
+  scrollInfoPanelUp();
 }
 
 function scrollInfoPanelUp() {
