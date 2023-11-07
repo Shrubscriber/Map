@@ -21,19 +21,6 @@ const displayFields = [
   "Plant Description",
 ];
 
-// data and objects related to the Add a Tree functionality
-// const NewTree = {
-//   latitude: null,
-//   longitude: null,
-//   layerSource: new ol.source.Vector(),
-//   layer: null,
-//   selectingLocation: false,
-
-//   locationSelected: function () {
-//     return this.latitude && this.longitude;
-//   },
-// };
-
 //setup loading screen
 document.addEventListener("DOMContentLoaded", function () {
   // Show the loading screen
@@ -202,19 +189,6 @@ function addTreeMarkers() {
     style: getTreeStyle,
   });
 
-  // NewTree.layer = new ol.layer.Vector({
-  //   source: NewTree.layerSource,
-  //   style: new ol.style.Style({
-  //     fill: new ol.style.Fill({
-  //       color: "rgba(255, 0, 0, 0.2)",
-  //     }),
-  //     stroke: new ol.style.Stroke({
-  //       color: "red",
-  //       width: 2,
-  //     }),
-  //   }),
-  // });
-
   // Set up the map
   map = new ol.Map({
     target: "map",
@@ -246,8 +220,8 @@ function resetMapPosition() {
     map
       .getView()
       .fit([
-        -13588363.117644893, 6014926.988070364, -11911787.933140391,
-        8916691.730482,
+        -12653500.201822834, 7053485.787818839, -12616155.49509524,
+        7127026.133374718,
       ]);
   } else {
     map
