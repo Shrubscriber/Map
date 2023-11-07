@@ -267,16 +267,14 @@ function setupMapEvents() {
           const extent = ol.extent.boundingExtent(
             features.map((r) => r.getGeometry().getCoordinates())
           );
-          map
-            .getView()
-            .fit(extent, {
-              duration: 500,
-              minResolution:
-                map.getView().getZoom() < 16
-                  ? map.getView().getResolutionForZoom(16)
-                  : map.getView().getResolution(),
-              padding: [50, 50, 50, 50],
-            });
+          map.getView().fit(extent, {
+            duration: 500,
+            minResolution:
+              map.getView().getZoom() < 16
+                ? map.getView().getResolutionForZoom(16)
+                : map.getView().getResolution(),
+            padding: [50, 50, 50, 50],
+          });
         }
       }
     });
@@ -552,13 +550,13 @@ function showPhotoGallery() {
 
   function displayPhotos(startIndex) {
     paginatedContent.innerHTML = "";
-    const photoLinks = Array.from(Trees.photos, ([id, url]) => (url));
+    const photoLinks = Array.from(Trees.photos, ([id, url]) => url);
 
     for (
       let i = startIndex;
       i < startIndex + rowsPerPage && i < photoLinks.length;
       i++
-    ) { 
+    ) {
       const treePhoto = document.createElement("img");
       treePhoto.src = photoLinks[i];
       treePhoto.style.width = "100%";
@@ -595,7 +593,7 @@ function showPhotoGallery() {
       //   selectTree(tree.id);
       // });
       paginatedContent.appendChild(treePhoto);
-      // paginatedContent.appendChild(treeName);       
+      // paginatedContent.appendChild(treeName);
     }
   }
 
@@ -794,3 +792,18 @@ carouselNextBtn.style.display = "none";
 carouselPrevBtn.style.display = "none";
 
 fetchTreeRecords();
+
+// AirTable photos timeout after two hours. Prompt the user to refresh to get new image links
+function warnImageTimeout() {
+  const confirmation = confirm(
+    "All image links have timed out (2 hours). Press OK to refresh the page."
+  );
+
+  if (confirmation) {
+    location.reload();
+  }
+}
+
+// Calculate the delay in milliseconds for 2 hours
+const delayInMilliseconds = 2 * 60 * 60 * 1000;
+setTimeout(warnImageTimeout, delayInMilliseconds);
