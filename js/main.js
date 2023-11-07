@@ -7,7 +7,7 @@ const Trees = {
   layer: "",
   records: [],
   top: [],
-  withPhotos: [],
+  photos: new Map(),
   icons: {},
 };
 
@@ -73,7 +73,7 @@ function getTreeStyle(feature) {
     text = size.toString() + " trees";
     iconSrc = "img/forest1.png";
   } else if (size === 1) {
-    iconSrc = "img/tree.png";
+    iconSrc = "img/tree1.png";
     if (map.getView().getZoom() >= 16) {
       text = feature.get("features")[0].get("Name");
     }
@@ -101,13 +101,27 @@ function getTreeStyle(feature) {
 }
 
 function selectStyle(feature) {
+  const size = feature.get("features").length;
   const mapIcon = feature.get("Map Icon")
     ? feature.get("Map Icon")[0]
     : { id: "default", height: 48, width: 42 };
 
-  const selectstyle = new ol.style.Style({
+  let text = "";
+  let iconSrc = "";
+  if (size > 1) {
+    text = size.toString() + " trees";
+    iconSrc = "img/forest1.png";
+  } else if (size === 1) {
+    iconSrc = "img/tree1.png";
+    if (map.getView().getZoom() >= 16) {
+      text = feature.get("features")[0].get("Name");
+    }
+  }
+
+  return new ol.style.Style({
     image: new ol.style.Icon({
-      img: Trees.icons[mapIcon.id],
+      src: iconSrc,
+      //img: Trees.icons[mapIcon.id],
       anchor: [0.5, 1],
       imgSize: [mapIcon.width, mapIcon.height],
       scale: 1.0,
@@ -120,16 +134,15 @@ function selectStyle(feature) {
         width: 4,
       }),
       offsetY: 18,
-      text: map.getView().getZoom() >= 16 ? feature.get("Name") : "",
+      text: text,
     }),
     zIndex: 9999,
   });
-  return selectstyle;
 }
 
 // select interaction working on "click"
 const selectClick = new ol.interaction.Select({
-  condition: ol.events.condition.never,
+  condition: ol.events.condition.click,
   style: selectStyle,
 });
 
@@ -137,6 +150,8 @@ function addTreeMarkers() {
   const treeFeatures = [];
   Trees.icons.default = new Image();
   Trees.icons.default.src = "img/tree.png";
+
+  let uniquePhotoSet = new Map();
 
   // Add markers to the map
   Trees.records.forEach(function (record) {
@@ -157,7 +172,9 @@ function addTreeMarkers() {
     treeFeatures.push(treeFeature);
 
     if ("Photo" in record.fields) {
-      Trees.withPhotos.push(record);
+      record.fields["Photo"].forEach(function (photoObject) {
+        Trees.photos.set(photoObject.id, photoObject.url);
+      });
     }
 
     // if ("Map Icon" in record.fields) {
@@ -236,7 +253,7 @@ function resetMapPosition() {
 function setupMapEvents() {
   map.addInteraction(selectClick);
   map.on("click", (e) => {
-    selectClick.getFeatures().clear();
+    //selectClick.getFeatures().clear();
     Trees.layer.getFeatures(e.pixel).then((clickedFeatures) => {
       if (clickedFeatures.length) {
         // Get clustered Coordinates
@@ -535,14 +552,15 @@ function showPhotoGallery() {
 
   function displayPhotos(startIndex) {
     paginatedContent.innerHTML = "";
+    const photoLinks = Array.from(Trees.photos, ([id, url]) => (url));
+
     for (
       let i = startIndex;
-      i < startIndex + rowsPerPage && i < Trees.withPhotos.length;
+      i < startIndex + rowsPerPage && i < photoLinks.length;
       i++
-    ) {
-      const tree = Trees.withPhotos[i];
+    ) { 
       const treePhoto = document.createElement("img");
-      treePhoto.src = tree.fields["Photo"][0].url;
+      treePhoto.src = photoLinks[i];
       treePhoto.style.width = "100%";
 
       // add fullscreen on click behavior to image
@@ -566,18 +584,18 @@ function showPhotoGallery() {
       }
 
       // create Tree Name paragraph element
-      const treeName = document.createElement("p");
-      treeName.textContent = tree.fields["Tree Name"];
-      treeName.style["text-align"] = "center";
-      treeName.style["font-weight"] = "bold";
-      treeName.style.cursor = "pointer";
+      // const treeName = document.createElement("p");
+      // treeName.textContent = tree.fields["Tree Name"];
+      // treeName.style["text-align"] = "center";
+      // treeName.style["font-weight"] = "bold";
+      // treeName.style.cursor = "pointer";
 
-      // Zoom to tree when clicking on the Tree Name
-      treeName.addEventListener("click", function (event) {
-        selectTree(tree.id);
-      });
+      // // Zoom to tree when clicking on the Tree Name
+      // treeName.addEventListener("click", function (event) {
+      //   selectTree(tree.id);
+      // });
       paginatedContent.appendChild(treePhoto);
-      paginatedContent.appendChild(treeName);
+      // paginatedContent.appendChild(treeName);       
     }
   }
 
@@ -589,7 +607,7 @@ function showPhotoGallery() {
 
     function updatePagination(ul) {
       ul.innerHTML = ""; // Clear existing pagination items
-      const totalPages = Math.ceil(Trees.withPhotos.length / rowsPerPage);
+      const totalPages = Math.ceil(Trees.photos.size / rowsPerPage);
 
       for (let i = 1; i <= totalPages; i++) {
         const li = document.createElement("li");
