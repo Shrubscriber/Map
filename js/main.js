@@ -296,16 +296,6 @@ function showClusteredTrees(features) {
   tableElement.id = "searchResultsTable";
   tableElement.classList.add("table");
 
-  // Create the table header element and add it to the table
-  const tableHeaderElement = document.createElement("thead");
-  const tableHeaderRowElement = document.createElement("tr");
-  tableHeaderRowElement.style.cursor = "auto";
-  const nameHeaderElement = document.createElement("th");
-  nameHeaderElement.innerText = "Name";
-  tableHeaderRowElement.appendChild(nameHeaderElement);
-  tableHeaderElement.appendChild(tableHeaderRowElement);
-  tableElement.appendChild(tableHeaderElement);
-
   // Create the table body element and add it to the table
   const tableBodyElement = document.createElement("tbody");
   tableElement.appendChild(tableBodyElement);
