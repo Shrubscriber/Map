@@ -140,12 +140,6 @@ function selectStyle(feature) {
   });
 }
 
-// select interaction working on "click"
-const selectClick = new ol.interaction.Select({
-  condition: ol.events.condition.click,
-  style: selectStyle,
-});
-
 function addTreeMarkers() {
   const treeFeatures = [];
   Trees.icons.default = new Image();
@@ -251,16 +245,13 @@ function resetMapPosition() {
 }
 
 function setupMapEvents() {
-  map.addInteraction(selectClick);
   map.on("click", (e) => {
-    //selectClick.getFeatures().clear();
     Trees.layer.getFeatures(e.pixel).then((clickedFeatures) => {
       if (clickedFeatures.length) {
         // Get clustered Coordinates
         const features = clickedFeatures[0].get("features");
         if (features.length === 1) {
           const treeFeature = features[0];
-          selectClick.getFeatures().push(treeFeature);
           zoomToTree(treeFeature.getId());
         } else if (features.length > 1) {
           showClusteredTrees(features);
@@ -315,7 +306,7 @@ function showClusteredTrees(features) {
 
     // Add a click event listener to each table row
     rowElement.addEventListener("click", function (event) {
-      selectTree(tree.getId());
+      zoomToTree(tree.getId());
     });
   });
   searchResultsContainer.appendChild(tableElement);
@@ -482,15 +473,6 @@ function getTreeFeatureFromCluster(treeId) {
   return feature;
 }
 
-function selectTree(treeId) {
-  // Clear the current selection
-  selectClick.getFeatures().clear();
-  const feature = getTreeFeatureFromCluster(treeId);
-  // Add the feature to the selection
-  selectClick.getFeatures().push(feature);
-  zoomToTree(treeId);
-}
-
 function zoomToTree(treeId) {
   // Zoom the map to the corresponding feature and display its information
   const feature = getTreeFeatureFromCluster(treeId);
@@ -581,7 +563,7 @@ function showPhotoGallery() {
 
       // // Zoom to tree when clicking on the Tree Name
       // treeName.addEventListener("click", function (event) {
-      //   selectTree(tree.id);
+      //   zoomToTree(tree.id);
       // });
       paginatedContent.appendChild(treePhoto);
       // paginatedContent.appendChild(treeName);
@@ -741,7 +723,7 @@ function showSearch() {
 
       // Add a click event listener to each table row
       rowElement.addEventListener("click", function (event) {
-        selectTree(tree.id);
+        zoomToTree(tree.id);
       });
     });
     searchResultsContainer.appendChild(tableElement);
