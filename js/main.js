@@ -100,46 +100,6 @@ function getTreeStyle(feature) {
   });
 }
 
-function selectStyle(feature) {
-  const size = feature.get("features").length;
-  const mapIcon = feature.get("Map Icon")
-    ? feature.get("Map Icon")[0]
-    : { id: "default", height: 48, width: 42 };
-
-  let text = "";
-  let iconSrc = "";
-  if (size > 1) {
-    text = size.toString() + " trees";
-    iconSrc = "img/forest1.png";
-  } else if (size === 1) {
-    iconSrc = "img/tree1.png";
-    if (map.getView().getZoom() >= 16) {
-      text = feature.get("features")[0].get("Name");
-    }
-  }
-
-  return new ol.style.Style({
-    image: new ol.style.Icon({
-      src: iconSrc,
-      //img: Trees.icons[mapIcon.id],
-      anchor: [0.5, 1],
-      imgSize: [mapIcon.width, mapIcon.height],
-      scale: 1.0,
-    }),
-    text: new ol.style.Text({
-      font: "14px Segoe UI,sans-serif",
-      fill: new ol.style.Fill({ color: "#000" }),
-      stroke: new ol.style.Stroke({
-        color: "#add8e6",
-        width: 4,
-      }),
-      offsetY: 5,
-      text: text,
-    }),
-    zIndex: 9999,
-  });
-}
-
 function addTreeMarkers() {
   const treeFeatures = [];
   Trees.icons.default = new Image();
