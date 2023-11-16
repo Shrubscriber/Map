@@ -17,8 +17,6 @@ const displayFields = [
   "Date",
   "Donation Type",
   "State",
-  "Article Text",
-  "Plant Description",
 ];
 
 //setup loading screen
@@ -150,7 +148,7 @@ function addTreeMarkers() {
   });
 
   const clusterSource = new ol.source.Cluster({
-    distance: parseInt(1, 10),
+    distance: parseInt(0, 10),
     minDistance: parseInt(0, 10),
     source: treeSource,
   });
@@ -267,6 +265,7 @@ function showClusteredTrees(features) {
     // Add a click event listener to each table row
     rowElement.addEventListener("click", function (event) {
       zoomToTree(tree.getId());
+      scrollInfoPanelUp();
     });
   });
   searchResultsContainer.appendChild(tableElement);
@@ -274,9 +273,10 @@ function showClusteredTrees(features) {
 }
 
 function scrollInfoPanelUp() {
+  const infoPanelDiv = document.getElementById("infoPanel");
   if (isMobile()) {
-    const myDiv = document.getElementById("infoPanel");
-    const rect = myDiv.getBoundingClientRect();
+    // on mobile, move the div up or down so that the top edge aligns with the top edge of the screen
+    const rect = infoPanelDiv.getBoundingClientRect();
     const offset = window.scrollY;
     const top = rect.top + offset;
 
@@ -284,6 +284,10 @@ function scrollInfoPanelUp() {
       top: top,
       behavior: "smooth",
     });
+  }
+  else {
+    // on desktop, scroll to the top of the info panel
+    infoPanelDiv.scrollTop = 0;
   }
 }
 
@@ -304,6 +308,21 @@ function showTreeInfo(feature) {
         html += `<p><strong>${field}:</strong> ${fieldValue}</p>`;
       }
     });
+
+    // show shrubscriber article information
+    const articleUrl = feature.get('Article');
+    const articleText = feature.get('Article Text');
+
+    if(articleUrl && articleText) {
+      html += `<p><strong>Donation Information </strong><a href="${articleUrl}" target="_blank">from Shrubscriber</a></p>`;
+      html += `<p style="white-space: pre-line;">${articleText}</p>`;
+    }
+
+    const speciesInfo = feature.get('Plant Description');
+    if(speciesInfo) {
+      html += `<p><strong>Plant Description</strong></p>`;
+      html += `<p style="white-space: pre-line;">${speciesInfo}</p>`;
+    }
 
     // Update Info Panel with Tree Information
     const infoPanel = document.getElementById("infoPanel-content");
@@ -725,18 +744,3 @@ carouselNextBtn.style.display = "none";
 carouselPrevBtn.style.display = "none";
 
 fetchTreeRecords();
-
-// AirTable photos timeout after two hours. Prompt the user to refresh to get new image links
-function warnImageTimeout() {
-  const confirmation = confirm(
-    "All image links have timed out (2 hours). Press OK to refresh the page."
-  );
-
-  if (confirmation) {
-    location.reload();
-  }
-}
-
-// Calculate the delay in milliseconds for 2 hours
-const delayInMilliseconds = 2 * 60 * 60 * 1000;
-setTimeout(warnImageTimeout, delayInMilliseconds);
