@@ -12,12 +12,7 @@ const Trees = {
 };
 
 // fields to show on the info panel when selecting a tree
-const displayFields = [
-  "Address",
-  "Date",
-  "Donation Type",
-  "State",
-];
+const displayFields = ["Address", "Date", "Donation Type", "State"];
 
 //setup loading screen
 document.addEventListener("DOMContentLoaded", function () {
@@ -61,49 +56,49 @@ async function fetchTreeRecords() {
 
 function getTreeStyle(feature) {
   const size = feature.get("features").length;
-  const mapIcon = feature.get("Map Icon")
-    ? feature.get("Map Icon")[0]
-    : { id: "default", height: 48, width: 42 };
+  if (size > 0) {
+    const mapIcon = feature.get("Map Icon")
+      ? feature.get("Map Icon")[0]
+      : { id: "default", height: 48, width: 42 };
 
-  let text = "";
-  let iconSrc = "";
-  if (size > 1) {
-    text = size.toString() + " trees";
-    iconSrc = "img/forest1.png";
-  } else if (size === 1) {
-    iconSrc = "img/tree1.png";
-    if (map.getView().getZoom() >= 16) {
-      text = feature.get("features")[0].get("Name");
+    let text = "";
+    let iconSrc = "";
+    if (size > 1) {
+      text = size.toString() + " trees";
+      iconSrc = "img/forest1.png";
+    } else if (size === 1) {
+      iconSrc = "img/tree1.png";
+      if (map.getView().getZoom() >= 16) {
+        text = feature.get("features")[0].get("Name");
+      }
     }
-  }
 
-  return new ol.style.Style({
-    image: new ol.style.Icon({
-      src: iconSrc,
-      //img: Trees.icons[mapIcon.id],
-      anchor: [0.5, 1],
-      imgSize: [mapIcon.width, mapIcon.height],
-      scale: 0.65,
-    }),
-    text: new ol.style.Text({
-      font: "12px Segoe UI,sans-serif",
-      fill: new ol.style.Fill({ color: "#000" }),
-      stroke: new ol.style.Stroke({
-        color: "#fff",
-        width: 3,
+    return new ol.style.Style({
+      image: new ol.style.Icon({
+        src: iconSrc,
+        //img: Trees.icons[mapIcon.id],
+        anchor: [0.5, 1],
+        imgSize: [mapIcon.width, mapIcon.height],
+        scale: 0.65,
       }),
-      offsetY: 5,
-      text: text,
-    }),
-  });
+      text: new ol.style.Text({
+        font: "12px Segoe UI,sans-serif",
+        fill: new ol.style.Fill({ color: "#000" }),
+        stroke: new ol.style.Stroke({
+          color: "#fff",
+          width: 3,
+        }),
+        offsetY: 5,
+        text: text,
+      }),
+    });
+  }
 }
 
 function addTreeMarkers() {
   const treeFeatures = [];
   Trees.icons.default = new Image();
   Trees.icons.default.src = "img/tree.png";
-
-  let uniquePhotoSet = new Map();
 
   // Add markers to the map
   Trees.records.forEach(function (record) {
@@ -128,13 +123,6 @@ function addTreeMarkers() {
         Trees.photos.set(photoObject.id, photoObject.url);
       });
     }
-
-    // if ("Map Icon" in record.fields) {
-    //   const image = new Image();
-    //   image.crossOrigin = "anonymous";
-    //   image.src = record.fields["Map Icon"][0].url;
-    //   Trees.icons[`${record.fields["Map Icon"][0].id}`] = image;
-    // }
   });
 
   const baseTileLayer = new ol.layer.Tile({
@@ -284,8 +272,7 @@ function scrollInfoPanelUp() {
       top: top,
       behavior: "smooth",
     });
-  }
-  else {
+  } else {
     // on desktop, scroll to the top of the info panel
     infoPanelDiv.scrollTop = 0;
   }
@@ -310,16 +297,16 @@ function showTreeInfo(feature) {
     });
 
     // show shrubscriber article information
-    const articleUrl = feature.get('Article');
-    const articleText = feature.get('Article Text');
+    const articleUrl = feature.get("Article");
+    const articleText = feature.get("Article Text");
 
-    if(articleUrl && articleText) {
+    if (articleUrl && articleText) {
       html += `<p><strong>Donation Information </strong><a href="${articleUrl}" target="_blank">from Shrubscriber</a></p>`;
       html += `<p style="white-space: pre-line;">${articleText}</p>`;
     }
 
-    const speciesInfo = feature.get('Plant Description');
-    if(speciesInfo) {
+    const speciesInfo = feature.get("Plant Description");
+    if (speciesInfo) {
       html += `<p><strong>Plant Description</strong></p>`;
       html += `<p style="white-space: pre-line;">${speciesInfo}</p>`;
     }
@@ -532,20 +519,8 @@ function showPhotoGallery() {
           }
         });
       }
-
-      // create Tree Name paragraph element
-      // const treeName = document.createElement("p");
-      // treeName.textContent = tree.fields["Tree Name"];
-      // treeName.style["text-align"] = "center";
-      // treeName.style["font-weight"] = "bold";
-      // treeName.style.cursor = "pointer";
-
-      // // Zoom to tree when clicking on the Tree Name
-      // treeName.addEventListener("click", function (event) {
-      //   zoomToTree(tree.id);
-      // });
+      
       paginatedContent.appendChild(treePhoto);
-      // paginatedContent.appendChild(treeName);
     }
   }
 
